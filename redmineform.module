@@ -1,0 +1,25 @@
+<?php
+
+module_load_include('inc','redmineform','content/redmineform.createAdminForm');
+module_load_include('inc','redmineform','content/redmineform.createSupportForm');
+
+function redmineform_menu()
+{
+    $items = array();
+    $items['redmine/supportform'] = array(
+        'page callback' => 'drupal_get_form',
+        'description' => 'Formular zum Absenden einer Supportanfrage',
+        'title' => 'Supportanfrage absenden',
+	'access arguments' => array('administer users'),
+        'page arguments' => array('redminesupport_form'),
+    );
+    $items['admin/config/administration/redmineapi'] = array(
+        'title' => 'Redmine API',
+        'description' => 'Parameter zur Redmine API festlegen',
+        'page callback' => 'drupal_get_form',
+        'page arguments' => array('redmineapi_configure'),
+        'access arguments' => array('administer redmineform settings'),
+    );
+    return $items;
+}
+

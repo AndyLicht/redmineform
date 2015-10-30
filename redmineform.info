@@ -1,0 +1,5 @@
+name = Redmine Ticketform
+description = Liefert ein Supportfenster 
+core = 7.x
+package = Redmine
+configure = admin/config/administration/redmineapi

@@ -1,0 +1,17 @@
+<?php
+/*
+ *    Datei legt alles an was für das Modul benötigt wird
+ */
+module_load_include('inc','redmineform','install/redmineform.createVariables');
+
+function redmineform_install()
+{
+    redmineform_install_variables();
+    drupal_flush_all_caches();
+}
+
+function redmineform_uninstall()
+{
+    redmineform_uninstall_variables();
+    drupal_flush_all_caches();
+}
