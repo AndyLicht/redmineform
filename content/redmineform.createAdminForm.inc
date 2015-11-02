@@ -49,12 +49,12 @@ function redmineapi_configure()
     );
     $form['redmine']['redmine_api_project'] = array(
         '#type' => 'textfield',
-        '#title' => t('Projekt(Identifier)'),
+        '#title' => t('Projekt-IDs'),
         '#default_value' => variable_get('redmine_api_project'),
         '#size' => 100,
         '#maxlength' => 100,
         '#required' => FALSE,
-        '#description' => t('Wenn das Feld leer ist werden alle Projekte der Redmineinstanz zur Verfügung gestellt, die Trennung erfolgt mit [,] zum Beispiel projekt1,projekt2)'),
+        '#description' => t('Wenn das Feld leer ist werden alle Projekte der Redmineinstanz zur Verfügung gestellt, die Trennung erfolgt mit [,] zum Beispiel 1,5)'),
     );
     $form['redmine']['redmine_api_which'] = array(
         '#type' => 'select',
@@ -63,12 +63,21 @@ function redmineapi_configure()
         '#options' => array(0 => t('anzeigen'), 1 => t('nicht anzeigen')),
     );
     $form['redmine']['redmine_api_tracker'] = array(
-        '#type' => 'select',
-        '#title' => t('Möglichkeit den Tracker zu aktivieren'),
+        '#type' => 'checkbox',
+        '#title' => t('Möglichkeit den Tracker auszuwählen'),
         '#default_value' => variable_get('redmine_api_tracker'),
-        '#options' => array(0 => t('Ja'), 1 => t('Nein')),
     );
-    $form['redmine']['redmine_api_tip'] = array(
+    $form['redmine']['redmine_api_publish'] = array(
+        '#type' => 'checkbox',
+        '#title' => t('Tickets werden als private Tickets abgespeichert'),
+        '#default_value' => variable_get('redmine_api_publish'),
+    );
+    $form['tipsettings'] = array(
+        '#type' => 'fieldset',
+        '#title' => t('Tip'),
+        '#group' => 'advanced',
+    );
+    $form['tipsettings']['redmine_api_tip'] = array(
         '#type' => 'textarea',
         '#title' => t('Hinweistext (wird über dem Formularfeld angezeigt)'),
         '#default_value' => variable_get('redmine_api_tip'),
