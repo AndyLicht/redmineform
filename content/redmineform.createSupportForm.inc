@@ -58,43 +58,52 @@ function redminesupport_form()
         '#maxlength' => 10000,
         '#required' => TRUE,
     );
-     $form['redmine_name'] = array(
-        '#type' => 'textfield',
-        '#title' => t('Name:'),
-        '#size' => 83,
-        '#maxlength' => 255,
-        '#required' => FALSE,
-    );
-    $form['redmine_ticket_email'] = array(
-        '#type' => 'textfield',
-        '#title' => t('E-Mail:'),
-        '#size' => 83,
-        '#maxlength' => 255,
-        '#required' => FALSE,
-    );
+    if(variable_get('redmine_api_customfields') == '1')
+    {
+        $form['redmine_name'] = array(
+            '#type' => 'textfield',
+            '#title' => t('Name:'),
+            '#size' => 83,
+            '#maxlength' => 255,
+            '#required' => FALSE,
+        );
+        $form['redmine_ticket_email'] = array(
+            '#type' => 'textfield',
+            '#title' => t('E-Mail:'),
+            '#size' => 83,
+            '#maxlength' => 255,
+            '#required' => FALSE,
+        );
+    };
     $form['submit'] = array('#type' => 'submit', '#value' => t('Ticket erstellen'));
     return $form;
 }
-/*
+
 function redminesupport_form_validate($form, &$form_state)
 {
-    $mail = $form_values['submitted_tree']['email_address'];
+    $mail = $form['redmine_ticket_email']['#value'];
     if (!valid_email_address($mail)) 
     {
-       form_set_error('submitted][email_address', t('The email address appears to be invalid.'));
+       form_set_error('Email', t('The email address appears to be invalid.'));
     }
-}*/
+}
+
+
 function redminesupport_form_submit($form, &$form_state) 
 {
     $url = variable_get('redmine_api_url').'issues.json';
-    dsm(variable_get('redmine_api_user'));
-    dsm(variable_get('redmine_api_password'));
     
     $json['issue']['project_id'] = $form_state['values']['redmine_api_project'];
     $json['issue']['subject'] = $form_state['values']['redmine_ticket_subject'];
     if(isset($form_state['values']['redmine_api_tracker']))
     {
         $json['issue']['tracker_id'] = $form_state['values']['redmine_api_tracker'];
+    }
+    if(isset($form_state['values']['redmine_ticket_email']) && isset($form_state['values']['redmine_name']))
+    {
+        $json['issue']['custom_fields'] = array();
+        $json['issue']['custom_fields'][] = array('value' => $form_state['values']['redmine_name'],'id' => '2');
+        $json['issue']['custom_fields'][]= array('value' => $form_state['values']['redmine_ticket_email'], 'id' => '1');
     }
     $json['issue']['description'] = $form_state['values']['redmine_ticket_body'];
     $json['issue']['is_private'] = variable_get('redmine_api_publish');

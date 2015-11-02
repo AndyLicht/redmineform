@@ -62,6 +62,11 @@ function redmineapi_configure()
         '#default_value' => variable_get('redmine_api_which'),
         '#options' => array(0 => t('anzeigen'), 1 => t('nicht anzeigen')),
     );
+    $form['redmine']['redmine_api_customfields'] = array(
+        '#type' => 'checkbox',
+        '#title' => t('Name und Emailadresse mit angeben'),
+        '#default_value' => variable_get('redmine_api_customfields'),
+    );
     $form['redmine']['redmine_api_tracker'] = array(
         '#type' => 'checkbox',
         '#title' => t('Möglichkeit den Tracker auszuwählen'),
