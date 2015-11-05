@@ -1,15 +1,20 @@
 <?php
 
 
-function redminesupport_form()
+function redminesupport_form($form,$form_state,$givenproject)
 {
+    
+    dsm($givenproject);
+    var_dump($givenproject);
     $url = variable_get('redmine_api_url');
     $options = array();     
     $options['headers'] = array('Content-Type' => 'text/xml');
     $options['method'] = 'GET';
         
     $response = drupal_http_request($url.'projects.xml',$options);
+    
     $xml = new SimpleXMLElement($response->data);
+    
     $projektliste_id =  redminesupport_get_content($xml,"//*[local-name()='project']/*[local-name()='id']");
     $projektliste_name =  redminesupport_get_content($xml,"//*[local-name()='project']/*[local-name()='name']");
     $projektliste_ = array_combine($projektliste_id,$projektliste_name);
