@@ -1,26 +1,26 @@
 <?php
 
 
-function redminesupport_form($form,$form_state,$givenproject)
+function redminesupport_form($form, &$form_state,$givenprojectid = null)
 {
-    
-    dsm($givenproject);
-    var_dump($givenproject);
     $url = variable_get('redmine_api_url');
     $options = array();     
     $options['headers'] = array('Content-Type' => 'text/xml');
     $options['method'] = 'GET';
-        
     $response = drupal_http_request($url.'projects.xml',$options);
-    
     $xml = new SimpleXMLElement($response->data);
-    
     $projektliste_id =  redminesupport_get_content($xml,"//*[local-name()='project']/*[local-name()='id']");
     $projektliste_name =  redminesupport_get_content($xml,"//*[local-name()='project']/*[local-name()='name']");
     $projektliste_ = array_combine($projektliste_id,$projektliste_name);
-    $projektliste_final = redminesupport_useFilter($projektliste_);
     
-    
+    if($givenprojectid != null)
+    {
+        $projektliste_final = redminesupport_useFilter($projektliste_,$givenprojectid);
+    }
+    else
+    {
+        $projektliste_final = redminesupport_useFilter($projektliste_);
+    };
     $form = array();
     $form['redmine_introduction'] = array(
         '#type' => 'markup',
@@ -150,17 +150,17 @@ function redminesupport_get_content($xml,$xpath) //Achtung Funktion kann zwei We
     }
 }
 
-function redminesupport_useFilter($allProjects)
+function redminesupport_useFilter($allProjects,$givenprojectid = null)
 {   
     $inputProjects = variable_get('redmine_api_project');
+    dsm('filter for:'.$givenprojectid);
     //wenn keine Projekte angegeben sind werden alle zur Auswahl angeboten
-    if(null == $inputProjects)
+    if(null == $inputProjects && $givenprojectid == null)
     {
         return $allProjects;
     }
     else
     {
-        
         $_array = array();
         if(strpos($inputProjects,','))
         {
@@ -173,11 +173,39 @@ function redminesupport_useFilter($allProjects)
         //bei 0 werden nur die angegebenen Projekte angezeigt; bei 1 werden diese rausgefiltert
         if(variable_get('redmine_api_which') == '0')
         {
-            foreach ($allProjects as $project => $value) 
+            if($givenprojectid == null)
             {
-                if(!in_array($project,$_array))
+                dsm('bin in der schleife wenn das projekt nicht in der url angegeben wird');
+                foreach ($allProjects as $project => $value) 
                 {
-                    unset($allProjects[$project]);
+                    if(!in_array($project,$_array))
+                    {
+                        unset($allProjects[$project]);
+                    }
+                }
+            }
+            else
+            {
+                dsm('bin in der schleife wenn das projekt in der url angegeben wird');
+                if(in_array($givenprojectid,$_array))
+                {  
+                    $_array2 = array();
+                    $_array2[0] = $givenprojectid;
+                    foreach ($allProjects as $project => $value) 
+                    {
+                        if(!in_array($project,$_array2))
+                        {
+                            unset($allProjects[$project]);
+                        }
+                    }
+                }
+                else
+                {
+                    foreach ($allProjects as $project => $value) 
+                    {
+                        drupal_set_message('kein offiziell unterstütztes Redmine-Projekt',$type = 'warning',$repeat=FALSE);
+                        unset($allProjects[$project]); 
+                    }
                 }
             }
         }

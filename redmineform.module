@@ -11,7 +11,7 @@ function redmineform_menu()
         'description' => 'Formular zum Absenden einer Supportanfrage',
         'title' => 'Supportanfrage absenden',
 	'access arguments' => array('administer users'),
-        'page arguments' => array('redminesupport_form'),
+        'page arguments' => array('redminesupport_form',2),
     );
     $items['admin/config/administration/redmineapi'] = array(
         'title' => 'Redmine API',
@@ -22,4 +22,3 @@ function redmineform_menu()
     );
     return $items;
 }
-
