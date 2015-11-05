@@ -1,2 +1,2 @@
 # RedmineForm
-Erlaubt das Anbinden einer Redmine API an Drupal und das Erzeugen von Tickets.
+Erlaubt das Anbinden einer Redmine API an Drupal zum Erzeugen von Tickets.
