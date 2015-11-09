@@ -91,7 +91,6 @@ function redmineapi_configure()
         '#type' => 'textarea',
         '#title' => t('Hinweistext (wird unter den Kontaktfeldern angezeigt)'),
         '#default_value' => variable_get('redmine_api_customfields_tip_text'),
-        '#size' => 100,
         '#required' => FALSE,
     );
     $form['tipsettings'] = array(
@@ -109,7 +108,33 @@ function redmineapi_configure()
         '#type' => 'textarea',
         '#title' => t('Hinweistext (wird über dem Formularfeld angezeigt)'),
         '#default_value' => variable_get('redmine_api_tip'),
-        '#size' => 100,
+        '#required' => FALSE,
+    );
+    $form['sendingsettings'] = array(
+        '#type' => 'fieldset',
+        '#title' => t('Sending Settings'),
+        '#group' => 'advanced',
+    );
+    
+    $form['sendingsettings']['redmine_api_sending_check'] = array(
+        '#type' => 'checkbox',
+        '#title' => t('Status anzeigen'),
+        '#default_value' => variable_get('redmine_api_sending_check'),
+        '#required' => FALSE,
+    );
+    
+    $active = array(0 => t('echten Link'), 1 => t('als URL'));
+    $form['sendingsettings']['redmine_api_sending_aslink'] = array(
+        '#type' => 'radios',
+        '#title' => t('Ticket ausgeben als:'),
+        '#default_value' => variable_get('redmine_api_sending_aslink'),
+        '#options' => $active,
+        '#required' => FALSE,
+    );
+    $form['sendingsettings']['redmine_api_sending_text'] = array(
+        '#type' => 'textarea',
+        '#title' => t('Statusmeldung mit Link (bitte {URL} an die Stelle schreiben wo die URl oder der Link auftauchen sollen).'),
+        '#default_value' => variable_get('redmine_api_sending_text'),
         '#required' => FALSE,
     );
     return system_settings_form($form);

@@ -106,10 +106,8 @@ function redminesupport_form_validate($form, &$form_state)
         {
             form_set_error('Email', t('The email address appears to be invalid.'));
         }
-    }
-    
+    }  
 }
-
 
 function redminesupport_form_submit($form, &$form_state) 
 {
@@ -137,21 +135,21 @@ function redminesupport_form_submit($form, &$form_state)
     $options['headers']['Content-Type'] = 'application/json';
     $options['headers']['Accept'] = 'application/json';
     $response = drupal_http_request($url, $options);
-    dsm(json_decode($response->data)->issue);
     
-    
-    
-//    $options2['method'] = 'POST';
-//    
-//    $options2['max_redirects'] = 0;      
-//    $options2['headers']['Authorization'] = 'Basic ' . base64_encode(variable_get('redmine_api_user') .":". (variable_get('redmine_api_password')));
-//    $options2['headers']['Content-Type'] = 'application/json';
-//    $options2['headers']['Accept'] = 'application/json';
-//    $response = drupal_http_request(variable_get('redmine_api_url').'issues.xml', $options2);
-//    dsm($response->data);
-//    
-    
-    
+    if(variable_get('redmine_api_sending_check') == '1')
+    {    
+        $id = json_decode($response->data)->issue->id;
+        if(variable_get('redmine_api_sending_aslink') == 1)
+        {    
+            $url = variable_get('redmine_api_url').'issues/'.$id;
+        }
+        else
+        {
+            $url = '<a href="'.variable_get('redmine_api_url').'issues/'.$id.'">'.t('hier').'</a>';
+        }
+        $message = str_replace("{URL}",$url,variable_get('redmine_api_sending_text'));
+        drupal_set_message($message, 'status');  
+    }
 }
 
 
