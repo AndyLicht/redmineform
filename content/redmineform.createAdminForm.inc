@@ -62,11 +62,6 @@ function redmineapi_configure()
         '#default_value' => variable_get('redmine_api_which'),
         '#options' => array(0 => t('anzeigen'), 1 => t('nicht anzeigen')),
     );
-    $form['redmine']['redmine_api_customfields'] = array(
-        '#type' => 'checkbox',
-        '#title' => t('Name und Emailadresse mit angeben'),
-        '#default_value' => variable_get('redmine_api_customfields'),
-    );
     $form['redmine']['redmine_api_tracker'] = array(
         '#type' => 'checkbox',
         '#title' => t('Möglichkeit den Tracker auszuwählen'),
@@ -77,17 +72,44 @@ function redmineapi_configure()
         '#title' => t('Tickets werden als private Tickets abgespeichert'),
         '#default_value' => variable_get('redmine_api_publish'),
     );
+    $form['customfields'] = array(
+        '#type' => 'fieldset',
+        '#title' => t('Custom Fields'),
+        '#group' => 'advanced',
+    );
+    $form['customfields']['redmine_api_customfields'] = array(
+        '#type' => 'checkbox',
+        '#title' => t('Name und Emailadresse mit angeben'),
+        '#default_value' => variable_get('redmine_api_customfields'),
+    );
+    $form['customfields']['redmine_api_customfields_tip_check'] = array(
+        '#type' => 'checkbox',
+        '#title' => t('mit Hinweis angeben'),
+        '#default_value' => variable_get('redmine_api_customfields_tip_check'),
+    );
+    $form['customfields']['redmine_api_customfields_tip_text'] = array(
+        '#type' => 'textarea',
+        '#title' => t('Hinweistext (wird unter den Kontaktfeldern angezeigt)'),
+        '#default_value' => variable_get('redmine_api_customfields_tip_text'),
+        '#size' => 100,
+        '#required' => FALSE,
+    );
     $form['tipsettings'] = array(
         '#type' => 'fieldset',
         '#title' => t('Tip'),
         '#group' => 'advanced',
+    );
+    $form['tipsettings']['redmine_api_check'] = array(
+        '#type' => 'checkbox',
+        '#title' => t('Hinweistext anzeigen'),
+        '#default_value' => variable_get('redmine_api_check'),
+        '#required' => FALSE,
     );
     $form['tipsettings']['redmine_api_tip'] = array(
         '#type' => 'textarea',
         '#title' => t('Hinweistext (wird über dem Formularfeld angezeigt)'),
         '#default_value' => variable_get('redmine_api_tip'),
         '#size' => 100,
-        '#maxlength' => 100,
         '#required' => FALSE,
     );
     return system_settings_form($form);

@@ -4,14 +4,17 @@
 function redminesupport_form($form, &$form_state,$givenprojectid = null)
 {
     $url = variable_get('redmine_api_url');
+    
     $options = array();     
     $options['headers'] = array('Content-Type' => 'text/xml');
     $options['method'] = 'GET';
+    
     $response = drupal_http_request($url.'projects.xml',$options);
     $xml = new SimpleXMLElement($response->data);
     $projektliste_id =  redminesupport_get_content($xml,"//*[local-name()='project']/*[local-name()='id']");
     $projektliste_name =  redminesupport_get_content($xml,"//*[local-name()='project']/*[local-name()='name']");
     $projektliste_ = array_combine($projektliste_id,$projektliste_name);
+    
     
     if($givenprojectid != null)
     {
@@ -22,10 +25,13 @@ function redminesupport_form($form, &$form_state,$givenprojectid = null)
         $projektliste_final = redminesupport_useFilter($projektliste_);
     };
     $form = array();
-    $form['redmine_introduction'] = array(
-        '#type' => 'markup',
-        '#markup' => variable_get('redmine_api_tip'),
-    );
+    if(variable_get('redmine_api_check') == '1')
+    {
+        $form['redmine_introduction'] = array(
+            '#type' => 'markup',
+            '#markup' => variable_get('redmine_api_tip'),
+        );
+    }
     $form['redmine_api_project'] = array(
         '#type' => 'select',
         '#title' => t('Projekt: '),
@@ -79,6 +85,13 @@ function redminesupport_form($form, &$form_state,$givenprojectid = null)
             '#maxlength' => 255,
             '#required' => FALSE,
         );
+        if(variable_get('redmine_api_customfields_tip_check','0') == '1')
+        {
+            $form['redmine_introduction'] = array(
+                '#type' => 'markup',
+                '#markup' => variable_get('redmine_api_customfields_tip_text'),
+            );
+        }
     };
     $form['submit'] = array('#type' => 'submit', '#value' => t('Ticket erstellen'));
     return $form;
@@ -86,11 +99,15 @@ function redminesupport_form($form, &$form_state,$givenprojectid = null)
 
 function redminesupport_form_validate($form, &$form_state)
 {
-    $mail = $form['redmine_ticket_email']['#value'];
-    if (!valid_email_address($mail)) 
+    if(isset($form['redmine_ticket_email']['#value']))
     {
-       form_set_error('Email', t('The email address appears to be invalid.'));
+        $mail = $form['redmine_ticket_email']['#value'];
+        if (!valid_email_address($mail)) 
+        {
+            form_set_error('Email', t('The email address appears to be invalid.'));
+        }
     }
+    
 }
 
 
@@ -100,11 +117,11 @@ function redminesupport_form_submit($form, &$form_state)
     
     $json['issue']['project_id'] = $form_state['values']['redmine_api_project'];
     $json['issue']['subject'] = $form_state['values']['redmine_ticket_subject'];
-    if(isset($form_state['values']['redmine_api_tracker']))
+    if(isset($form['values']['redmine_api_tracker']))
     {
         $json['issue']['tracker_id'] = $form_state['values']['redmine_api_tracker'];
     }
-    if(isset($form_state['values']['redmine_ticket_email']) && isset($form_state['values']['redmine_name']))
+    if(isset($form['values']['redmine_ticket_email']) && isset($form['values']['redmine_name']))
     {
         $json['issue']['custom_fields'] = array();
         $json['issue']['custom_fields'][] = array('value' => $form_state['values']['redmine_name'],'id' => '2');
@@ -112,7 +129,6 @@ function redminesupport_form_submit($form, &$form_state)
     }
     $json['issue']['description'] = $form_state['values']['redmine_ticket_body'];
     $json['issue']['is_private'] = variable_get('redmine_api_publish');
-    dsm(json_encode($json));
     
     $options['method'] = 'POST';
     $options['data'] = json_encode($json);
@@ -121,6 +137,21 @@ function redminesupport_form_submit($form, &$form_state)
     $options['headers']['Content-Type'] = 'application/json';
     $options['headers']['Accept'] = 'application/json';
     $response = drupal_http_request($url, $options);
+    dsm(json_decode($response->data)->issue);
+    
+    
+    
+//    $options2['method'] = 'POST';
+//    
+//    $options2['max_redirects'] = 0;      
+//    $options2['headers']['Authorization'] = 'Basic ' . base64_encode(variable_get('redmine_api_user') .":". (variable_get('redmine_api_password')));
+//    $options2['headers']['Content-Type'] = 'application/json';
+//    $options2['headers']['Accept'] = 'application/json';
+//    $response = drupal_http_request(variable_get('redmine_api_url').'issues.xml', $options2);
+//    dsm($response->data);
+//    
+    
+    
 }
 
 
