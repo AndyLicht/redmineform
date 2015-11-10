@@ -138,6 +138,7 @@ function redminesupport_form_submit($form, &$form_state)
     
     if(variable_get('redmine_api_sending_check') == '1')
     {    
+        dsm($response);
         $id = json_decode($response->data)->issue->id;
         if(variable_get('redmine_api_sending_aslink') == 1)
         {    
