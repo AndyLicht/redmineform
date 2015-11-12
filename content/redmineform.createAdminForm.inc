@@ -137,5 +137,17 @@ function redmineapi_configure()
         '#default_value' => variable_get('redmine_api_sending_text'),
         '#required' => FALSE,
     );
+    $form['filesettings'] = array(
+        '#type' => 'fieldset',
+        '#title' => t('File Settings'),
+        '#group' => 'advanced',
+    );
+    
+    $form['filesettings']['redmine_api_file_check'] = array(
+        '#type' => 'checkbox',
+        '#title' => t('Dateiupload erlauben'),
+        '#default_value' => variable_get('redmine_api_file_check'),
+        '#required' => FALSE,
+    );
     return system_settings_form($form);
 }

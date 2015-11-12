@@ -4,17 +4,14 @@
 function redminesupport_form($form, &$form_state,$givenprojectid = null)
 {
     $url = variable_get('redmine_api_url');
-    
     $options = array();     
     $options['headers'] = array('Content-Type' => 'text/xml');
     $options['method'] = 'GET';
-    
     $response = drupal_http_request($url.'projects.xml',$options);
     $xml = new SimpleXMLElement($response->data);
     $projektliste_id =  redminesupport_get_content($xml,"//*[local-name()='project']/*[local-name()='id']");
     $projektliste_name =  redminesupport_get_content($xml,"//*[local-name()='project']/*[local-name()='name']");
     $projektliste_ = array_combine($projektliste_id,$projektliste_name);
-    
     
     if($givenprojectid != null)
     {
@@ -39,7 +36,6 @@ function redminesupport_form($form, &$form_state,$givenprojectid = null)
         '#required' => False,
     );
     $tracker = variable_get('redmine_api_tracker');
-    
     if($tracker == '1')
     {
         $response = drupal_http_request($url.'trackers.xml',$options);
@@ -93,6 +89,18 @@ function redminesupport_form($form, &$form_state,$givenprojectid = null)
             );
         }
     };
+    if(variable_get('redmine_api_file_check') == '1')
+    {
+        
+        $form['redmine_ticket_files'] = array
+        (
+            '#title' => t('Anhang'),
+            '#name' => 'file',
+            '#type' => 'file',
+            '#upload_location' => 'public://',
+        );
+    };
+        
     $form['submit'] = array('#type' => 'submit', '#value' => t('Ticket erstellen'));
     return $form;
 }
@@ -106,12 +114,24 @@ function redminesupport_form_validate($form, &$form_state)
         {
             form_set_error('Email', t('The email address appears to be invalid.'));
         }
-    }  
+    } 
+//    $num_files = count($_FILES['files']['name']);
+//    dsm($_FILES);
+//    dsm($num_files);
+//    for ($i = 0; $i < $num_files; $i++) 
+//    {
+//        $file = file_save_upload($_FILES[$i], array(
+//            'file_validate_is_image' => array(),
+//            'file_validate_extensions' => array('png gif jpg jpeg'),
+//        ));
+//        dsm($file);
+//    }
+//    $file = file_save_upload( 'fid' );
 }
 
 function redminesupport_form_submit($form, &$form_state) 
 {
-    $url = variable_get('redmine_api_url').'issues.json';
+    
     
     $json['issue']['project_id'] = $form_state['values']['redmine_api_project'];
     $json['issue']['subject'] = $form_state['values']['redmine_ticket_subject'];
@@ -124,10 +144,29 @@ function redminesupport_form_submit($form, &$form_state)
         $json['issue']['custom_fields'] = array();
         $json['issue']['custom_fields'][] = array('value' => $form_state['values']['redmine_name'],'id' => '2');
         $json['issue']['custom_fields'][]= array('value' => $form_state['values']['redmine_ticket_email'], 'id' => '1');
-    }
+    } 
+    if(!empty($_FILES['file']['name']))
+    {
+        $url = variable_get('redmine_api_url').'uploads.json';
+        
+        $data = file_get_contents($_FILES['file']['tmp_name']);
+        dsm($data);
+        $options['method'] = 'POST';
+        $options['data'] = $data;
+        $options['max_redirects'] = 0;      
+        $options['headers']['Authorization'] = 'Basic ' . base64_encode(variable_get('redmine_api_user') .":". (variable_get('redmine_api_password')));
+        $options['headers']['Content-Type'] = 'application/octet-stream';
+        $options['headers']['Accept'] = 'application/json';
+        dsm($options);
+        $response = drupal_http_request($url, $options);
+        $filetoken = json_decode($response->data)->upload->token;   
+        $json['issue']['uploads'] = array();
+        $json['issue']['uploads'] = array('token'=>$filetoken,'filename'=>$_FILES['file']['name'],'content_type'=>'image/png');
+    }   
+    dsm(json_encode($json));
     $json['issue']['description'] = $form_state['values']['redmine_ticket_body'];
     $json['issue']['is_private'] = variable_get('redmine_api_publish');
-    
+    $url = variable_get('redmine_api_url').'issues.json';
     $options['method'] = 'POST';
     $options['data'] = json_encode($json);
     $options['max_redirects'] = 0;      
@@ -135,10 +174,10 @@ function redminesupport_form_submit($form, &$form_state)
     $options['headers']['Content-Type'] = 'application/json';
     $options['headers']['Accept'] = 'application/json';
     $response = drupal_http_request($url, $options);
+    dsm($response);
     
     if(variable_get('redmine_api_sending_check') == '1')
-    {    
-        dsm($response);
+    {   
         $id = json_decode($response->data)->issue->id;
         if(variable_get('redmine_api_sending_aslink') == 1)
         {    
