@@ -1,5 +1,5 @@
 <?php
-
+module_load_include('inc', 'redminesupport', '/system/redmineform.validation');
 
 function redminesupport_form($form, &$form_state,$givenprojectid = null)
 {
@@ -107,6 +107,8 @@ function redminesupport_form($form, &$form_state,$givenprojectid = null)
 
 function redminesupport_form_validate($form, &$form_state)
 {
+   
+   //check email input
     if(isset($form['redmine_ticket_email']['#value']))
     {
         $mail = $form['redmine_ticket_email']['#value'];
@@ -115,18 +117,26 @@ function redminesupport_form_validate($form, &$form_state)
             form_set_error('Email', t('The email address appears to be invalid.'));
         }
     } 
+    /*
+    //check file with fiel settings
     dsm($_FILES);
-    $num_files = count($_FILES['files']['name']);
-    dsm($num_files);
-//    for ($i = 0; $i < $num_files; $i++) 
-//    {
-//        $file = file_save_upload($_FILES[$i], array(
-//            'file_validate_is_image' => array(),
-//            'file_validate_extensions' => array('png gif jpg jpeg'),
-//        ));
-//        dsm($file);
-//    }
-//    $file = file_save_upload( 'fid' );
+    if(!empty($_FILES['file']['name']))
+    {
+        
+        //check if size is allowed:
+        if(variable_get('redmine_api_file_size') > 0)
+        {
+            
+        }
+        dsm($_FILES['file']['size']);
+        //check if extension is allowed
+        if(null !== variable_get('redmine_api_file_type'))
+        {
+            dsm(variable_get('redmine_api_file_type'));
+            file_validate_extensions((object)$_FILES,variable_get('redmine_api_file_type'));
+            dsm($_FILES['file']['type']);
+        }   
+    }*/
 }
 
 function redminesupport_form_submit($form, &$form_state) 
@@ -158,7 +168,7 @@ function redminesupport_form_submit($form, &$form_state)
         $options['headers']['Authorization'] = 'Basic ' . base64_encode(variable_get('redmine_api_user') .":". (variable_get('redmine_api_password')));
         $options['headers']['Content-Type'] = 'application/octet-stream';
         $response = drupal_http_request($url, $options);
-        dsm($response);
+        //dsm($response);
         $filetoken = json_decode($response->data)->upload->token;   
         $json['issue']['uploads'] = array();
         $json['issue']['uploads'][] = array('token'=>$filetoken,'filename'=>$_FILES['file']['name'],'content_type'=>$_FILES['file']['type']);

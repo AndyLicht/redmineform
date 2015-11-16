@@ -15,9 +15,11 @@ function redmineform_install_variables()
     variable_set('redmine_api_customfields_tip_text','Im Redminesystem werden Name und Emailadresse nicht angezeigt. Die Daten dienen zur Rückfragen, aktuell werden Sie noch nicht automatisch über Akutalisierungen zu Ihrem Ticket informiert.');
     variable_set('redmine_api_file_check','0');
     variable_set('redmine_api_file_type','jpeg,jpg,gif,bmp');
+    variable_set('redmine_api_file_size',0);
 }
 function redmineform_uninstall_variables()
 {   
+    variable_del('redmine_api_file_size');
     variable_del('redmine_api_file_type');
     variable_del('redmine_api_file_check');
     variable_del('redmine_api_sending_text');

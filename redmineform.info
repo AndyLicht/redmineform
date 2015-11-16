@@ -3,3 +3,4 @@ description = Liefert ein Supportformular
 core = 7.x
 package = Redmine
 configure = admin/config/administration/redmineapi
+version = 1.0

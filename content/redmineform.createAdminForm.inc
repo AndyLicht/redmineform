@@ -153,13 +153,14 @@ function redmineapi_configure()
         '#type' => 'textfield',
         '#title' => t('unterstützte Formate'),
         '#default_value' => variable_get('redmine_api_file_type'),
-        '#description' => t('DIe Endungen sind mit einem Komma zu trennen z.B. "jpeg,png,gif"'),
+        '#description' => t('Die Endungen sind mit einem Komma zu trennen z.B. "jpeg,png,gif"'),
         '#required' => FALSE,
     );
     $form['filesettings']['redmine_api_file_size'] = array(
         '#type' => 'textfield',
         '#title' => t('Dateigröße'),
         '#default_value' => variable_get('redmine_api_file_size'),
+        '#description' => t('zum Beispiel 2M für 2MB'),
         '#required' => FALSE,
     );
     return system_settings_form($form);
