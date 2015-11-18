@@ -146,12 +146,13 @@ function redminesupport_form_submit($form, &$form_state)
     $json['issue']['project_id'] = $form_state['values']['redmine_api_project'];
     $json['issue']['subject'] = $form_state['values']['redmine_ticket_subject'];
     
-    if(isset($form['values']['redmine_api_tracker']))
+    if(isset($form_state['values']['redmine_api_tracker']))
     {
+        
         $json['issue']['tracker_id'] = $form_state['values']['redmine_api_tracker'];
     }
     //Custom-Fields
-    if(isset($form['values']['redmine_ticket_email']) && isset($form['values']['redmine_name']))
+    if(isset($form_state['values']['redmine_ticket_email']) && isset($form_state['values']['redmine_name']))
     {
         $json['issue']['custom_fields'] = array();
         $json['issue']['custom_fields'][] = array('value' => $form_state['values']['redmine_name'],'id' => '2');
@@ -180,6 +181,7 @@ function redminesupport_form_submit($form, &$form_state)
     $url = variable_get('redmine_api_url').'issues.json';
     $options['method'] = 'POST';
     $options['data'] = json_encode($json);
+    dsm($options['data']);
     $options['max_redirects'] = 0;      
     $options['headers']['Authorization'] = 'Basic ' . base64_encode(variable_get('redmine_api_user') .":". (variable_get('redmine_api_password')));
     $options['headers']['Content-Type'] = 'application/json';
