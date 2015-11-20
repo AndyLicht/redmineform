@@ -72,6 +72,11 @@ function redmineapi_configure()
         '#title' => t('Tickets werden als private Tickets abgespeichert'),
         '#default_value' => variable_get('redmine_api_publish'),
     );
+    $form['redmine']['redmine_api_debug'] = array(
+        '#type' => 'checkbox',
+        '#title' => t('aktiviere Debug-Modus'),
+        '#default_value' => variable_get('redmine_api_debug'),
+    );
     $form['customfields'] = array(
         '#type' => 'fieldset',
         '#title' => t('Custom Fields'),

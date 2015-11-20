@@ -10,7 +10,8 @@ function redmineform_menu()
         'page callback' => 'drupal_get_form',
         'description' => 'Formular zum Absenden einer Supportanfrage',
         'title' => 'Supportanfrage absenden',
-	'access arguments' => array('administer users'),
+	//'access arguments' => array('administer nodes'),
+        'access callback' => TRUE,
         'page arguments' => array('redminesupport_form',2),
     );
     $items['admin/config/administration/redmineapi'] = array(

@@ -169,7 +169,10 @@ function redminesupport_form_submit($form, &$form_state)
         $options['headers']['Authorization'] = 'Basic ' . base64_encode(variable_get('redmine_api_user') .":". (variable_get('redmine_api_password')));
         $options['headers']['Content-Type'] = 'application/octet-stream';
         $response = drupal_http_request($url, $options);
-        //dsm($response);
+        if(variable_get('redmine_api_debug') == 1)
+        {
+            dsm($response);           
+        };
         $filetoken = json_decode($response->data)->upload->token;   
         $json['issue']['uploads'] = array();
         $json['issue']['uploads'][] = array('token'=>$filetoken,'filename'=>$_FILES['file']['name'],'content_type'=>$_FILES['file']['type']);
@@ -181,7 +184,10 @@ function redminesupport_form_submit($form, &$form_state)
     $url = variable_get('redmine_api_url').'issues.json';
     $options['method'] = 'POST';
     $options['data'] = json_encode($json);
-    dsm($options['data']);
+    if(variable_get('redmine_api_debug') == 1)
+    {
+        dsm($options['data']);
+    };
     $options['max_redirects'] = 0;      
     $options['headers']['Authorization'] = 'Basic ' . base64_encode(variable_get('redmine_api_user') .":". (variable_get('redmine_api_password')));
     $options['headers']['Content-Type'] = 'application/json';

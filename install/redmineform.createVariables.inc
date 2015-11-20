@@ -2,6 +2,7 @@
 function redmineform_install_variables()
 {
     variable_set('redmine_api_url','http://url.com/api');
+    variable_set('redmine_api_debug',0);
     variable_set('redmine_api_user','Username');
     variable_set('redmine_api_password','');
     variable_set('redmine_api_project','redmine');
@@ -19,6 +20,7 @@ function redmineform_install_variables()
 }
 function redmineform_uninstall_variables()
 {   
+    variable_del('redmine_api_debug');
     variable_del('redmine_api_file_size');
     variable_del('redmine_api_file_type');
     variable_del('redmine_api_file_check');
