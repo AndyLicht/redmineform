@@ -9,7 +9,7 @@ function redmineform_menu()
     $items['redmine/supportform'] = array(
         'page callback' => 'drupal_get_form',
         'description' => 'Formular zum Absenden einer Supportanfrage',
-        'title' => 'Supportanfrage absenden',
+        'title' => 'Ticketformular',
 	//'access arguments' => array('administer nodes'),
         'access callback' => TRUE,
         'page arguments' => array('redminesupport_form',2),
