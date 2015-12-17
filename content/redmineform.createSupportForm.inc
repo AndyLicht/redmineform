@@ -3,10 +3,21 @@ module_load_include('inc', 'redminesupport', '/system/redmineform.validation');
 
 function redminesupport_form($form, &$form_state,$givenprojectid = null)
 {
+    //Redmine and GET - Settings
     $url = variable_get('redmine_api_url');
     $options = array();     
     $options['headers'] = array('Content-Type' => 'text/xml');
     $options['method'] = 'GET';
+    
+    if(variable_get('redmine_api_check') == '1')
+    {
+        $form['redmine_introduction'] = array(
+            '#type' => 'markup',
+            '#markup' => variable_get('redmine_api_tip'),
+        );
+    }
+    
+    //Projects
     $response = drupal_http_request($url.'projects.xml',$options);
     $xml = new SimpleXMLElement($response->data);
     $projektliste_id =  redminesupport_get_content($xml,"//*[local-name()='project']/*[local-name()='id']");
@@ -15,39 +26,37 @@ function redminesupport_form($form, &$form_state,$givenprojectid = null)
     
     if($givenprojectid != null)
     {
-        $projektliste_final = redminesupport_useFilter($projektliste_,$givenprojectid);
+        $projektliste_final = redminesupport_useFilterProjects($projektliste_,$givenprojectid);
     }
     else
     {
-        $projektliste_final = redminesupport_useFilter($projektliste_);
-    };
-    $form = array();
-    if(variable_get('redmine_api_check') == '1')
-    {
-        $form['redmine_introduction'] = array(
-            '#type' => 'markup',
-            '#markup' => variable_get('redmine_api_tip'),
-        );
+        $projektliste_final = redminesupport_useFilterProjects($projektliste_);
     }
+    
     $form['redmine_api_project'] = array(
         '#type' => 'select',
         '#title' => t('Projekt: '),
         '#options' => $projektliste_final,
         '#required' => False,
     );
-    $tracker = variable_get('redmine_api_tracker');
-    if($tracker == '1')
+    
+    //Tracker
+    $trackerstatus = variable_get('redmine_api_trackerstatus');
+    if($trackerstatus == '1')
     {
         $response = drupal_http_request($url.'trackers.xml',$options);
         $xml = new SimpleXMLElement($response->data);
         $trackerliste_identifier =  redminesupport_get_content($xml,"//*[local-name()='tracker']/*[local-name()='id']");
         $trackerliste_name =  redminesupport_get_content($xml,"//*[local-name()='tracker']/*[local-name()='name']");
         $trackerliste = array_combine($trackerliste_identifier,$trackerliste_name);
+        $inputProjects = variable_get('redmine_api_tracker');
+        $trackerliste_final = redminesupport_useFilterTracker($trackerliste,$inputProjects);
         
-       $form['redmine_api_tracker'] = array(
+        
+        $form['redmine_api_tracker'] = array(
             '#type' => 'select',
             '#title' => t('Tracker: '),
-            '#options' => $trackerliste,
+            '#options' => $trackerliste_final,
             '#required' => TRUE,
         );
     }
@@ -91,7 +100,6 @@ function redminesupport_form($form, &$form_state,$givenprojectid = null)
     };
     if(variable_get('redmine_api_file_check') == '1')
     {
-        
         $form['redmine_ticket_files'] = array
         (
             '#title' => t('Anhang'),
@@ -116,39 +124,26 @@ function redminesupport_form_validate($form, &$form_state)
         {
             form_set_error('Email', t('The email address appears to be invalid.'));
         }
-    } 
-    /*
-    //check file with fiel settings
-    dsm($_FILES);
-    if(!empty($_FILES['file']['name']))
-    {
-        
-        //check if size is allowed:
-        if(variable_get('redmine_api_file_size') > 0)
-        {
-            
-        }
-        dsm($_FILES['file']['size']);
-        //check if extension is allowed
-        if(null !== variable_get('redmine_api_file_type'))
-        {
-            dsm(variable_get('redmine_api_file_type'));
-            file_validate_extensions((object)$_FILES,variable_get('redmine_api_file_type'));
-            dsm($_FILES['file']['type']);
-        }   
-    }*/
+    }
+    //check file input
+//    if(!empty($_FILES['file']['name']))
+//    {
+//        dsm($_FILES['file']['type']);
+//        variable_get();
+//        if(0 != 1)
+//        {
+//            form_set_error('File',t('The file format is not supported'));
+//        }
+//    } 
 }
 
 function redminesupport_form_submit($form, &$form_state) 
 {
-    
-    
     $json['issue']['project_id'] = $form_state['values']['redmine_api_project'];
     $json['issue']['subject'] = $form_state['values']['redmine_ticket_subject'];
     
     if(isset($form_state['values']['redmine_api_tracker']))
     {
-        
         $json['issue']['tracker_id'] = $form_state['values']['redmine_api_tracker'];
     }
     //Custom-Fields
@@ -211,8 +206,6 @@ function redminesupport_form_submit($form, &$form_state)
     }
 }
 
-
-
 function redminesupport_get_content($xml,$xpath) //Achtung Funktion kann zwei Wertetypen ausgeben String oder Array[String]
 {
     $content = array();
@@ -234,7 +227,7 @@ function redminesupport_get_content($xml,$xpath) //Achtung Funktion kann zwei We
     }
 }
 
-function redminesupport_useFilter($allProjects,$givenprojectid = null)
+function redminesupport_useFilterProjects($allProjects,$givenprojectid = null)
 {   
     $inputProjects = variable_get('redmine_api_project');
     //wenn keine Projekte angegeben sind werden alle zur Auswahl angeboten
@@ -326,4 +319,40 @@ function redminesupport_useFilter($allProjects,$givenprojectid = null)
         }
         return $allProjects;
     }  
+}
+
+function redminesupport_useFilterTracker($allProjects,$inputProjects)
+{   
+    
+    $_array = array();
+    if(strpos($inputProjects,','))
+    {
+        $_array = explode(',',$inputProjects);
+    }
+    else
+    {
+        $_array[0] = $inputProjects;
+    };
+    //bei 0 werden nur die angegebenen Projekte angezeigt; bei 1 werden diese rausgefiltert
+    if(variable_get('redmine_api_tracker_switcher') == '0')
+    {
+        foreach ($allProjects as $project => $value) 
+        {
+            if(!in_array($project,$_array))
+            {
+                unset($allProjects[$project]);
+            }
+        }
+    }
+    else
+    {
+        foreach ($_array as $project) 
+        {
+            if(array_key_exists($project,$allProjects))
+            {
+                unset($allProjects[$project]);
+            }
+        }
+    }
+    return $allProjects;  
 }

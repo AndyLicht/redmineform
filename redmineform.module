@@ -10,9 +10,8 @@ function redmineform_menu()
         'page callback' => 'drupal_get_form',
         'description' => 'Formular zum Absenden einer Supportanfrage',
         'title' => 'Ticketformular',
-	//'access arguments' => array('administer nodes'),
-        'access callback' => TRUE,
-        'page arguments' => array('redminesupport_form',2),
+        'page arguments' => array('redminesupport_form',2),        
+        'access arguments' => array('administer redmineform form'),
     );
     $items['admin/config/administration/redmineapi'] = array(
         'title' => 'Redmine API',
@@ -22,4 +21,18 @@ function redmineform_menu()
         'access arguments' => array('administer redmineform settings'),
     );
     return $items;
+}
+
+function redmineform_permission() 
+{
+    $permissions = array();
+    $permissions['administer redmine settings'] = array(
+        'title' => t('Administer Redmine Ticket Settings'),
+        'description' => t('Perform administration tasks for Redmine Settings.'),
+      );
+    $permissions['administer redmine form'] = array(
+        'title' => t('Administer Redmine Ticket Formular'),
+        'description' => t('Perform administration tasks for Redmine ticket formular.'),
+      );
+    return $permissions;
 }

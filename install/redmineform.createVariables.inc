@@ -6,6 +6,9 @@ function redmineform_install_variables()
     variable_set('redmine_api_user','Username');
     variable_set('redmine_api_password','');
     variable_set('redmine_api_project','redmine');
+    variable_set('redmine_api_tracker','');
+    variable_set('redmine_api_trackerstatus','');
+    variable_set('redmine_api_tracker_switcher',0);
     variable_set('redmine_api_check','0');
     variable_set('redmine_api_tip','Text der über dem Formular auftaucht, z.B. mit Hinweis auf ein Forum oder den Bugtracker');
     variable_set('redmine_api_customfields','0');
@@ -20,6 +23,7 @@ function redmineform_install_variables()
 }
 function redmineform_uninstall_variables()
 {   
+    variable_del('redmine_api_tracker_switcher');
     variable_del('redmine_api_debug');
     variable_del('redmine_api_file_size');
     variable_del('redmine_api_file_type');
@@ -31,6 +35,8 @@ function redmineform_uninstall_variables()
     variable_del('redmine_api_user');
     variable_del('redmine_api_password');
     variable_del('redmine_api_project');
+    variable_del('redmine_api_tracker');
+    variable_del('redmine_api_trackerstatus');
     variable_del('redmine_api_tip');
     variable_det('redmine_api_check');
     variable_del('redmine_api_customfields');

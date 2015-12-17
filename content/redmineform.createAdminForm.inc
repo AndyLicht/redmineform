@@ -62,10 +62,25 @@ function redmineapi_configure()
         '#default_value' => variable_get('redmine_api_which'),
         '#options' => array(0 => t('anzeigen'), 1 => t('nicht anzeigen')),
     );
-    $form['redmine']['redmine_api_tracker'] = array(
+    $form['redmine']['redmine_api_trackerstatus'] = array(
         '#type' => 'checkbox',
         '#title' => t('Möglichkeit den Tracker auszuwählen'),
+        '#default_value' => variable_get('redmine_api_trackerstatus'),
+    );
+    $form['redmine']['redmine_api_tracker'] = array(
+        '#type' => 'textfield',
+        '#title' => t('Tracker-IDs'),
         '#default_value' => variable_get('redmine_api_tracker'),
+        '#size' => 100,
+        '#maxlength' => 100,
+        '#required' => FALSE,
+        '#description' => t('Wenn das Feld leer ist werden alle Tracker der Redmineinstanz zur Verfügung gestellt, die Trennung erfolgt mit [,] zum Beispiel 1,5)'),
+    );
+    $form['redmine']['redmine_api_tracker_switcher'] = array(
+        '#type' => 'select',
+        '#title' => t('Angegebene Tracker'),
+        '#default_value' => variable_get('redmine_api_tracker_switcher'),
+        '#options' => array(0 => t('anzeigen'), 1 => t('nicht anzeigen')),
     );
     $form['redmine']['redmine_api_publish'] = array(
         '#type' => 'checkbox',
