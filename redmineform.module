@@ -26,11 +26,11 @@ function redmineform_menu()
 function redmineform_permission() 
 {
     $permissions = array();
-    $permissions['administer redmine settings'] = array(
+    $permissions['administer redmineform settings'] = array(
         'title' => t('Administer Redmine Ticket Settings'),
         'description' => t('Perform administration tasks for Redmine Settings.'),
       );
-    $permissions['administer redmine form'] = array(
+    $permissions['administer redmineform form'] = array(
         'title' => t('Administer Redmine Ticket Formular'),
         'description' => t('Perform administration tasks for Redmine ticket formular.'),
       );

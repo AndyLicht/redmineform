@@ -210,9 +210,9 @@ function redminesupport_form_submit($form, &$form_state)
     );
     
     $response = curl_exec($ch);
-//    dsm(curl_getinfo($ch));
-//    dsm(curl_error($ch));
-//    dsm($response);   
+//dsm(curl_getinfo($ch));
+//dsm(curl_error($ch));
+//dsm($response);   
 //    //Message
     if(variable_get('redmine_api_sending_check') == '1')
     {   
