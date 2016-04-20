@@ -98,14 +98,14 @@ function redminesupport_form($form, &$form_state,$givenprojectid = null)
             '#title' => t('Name:'),
             '#size' => 83,
             '#maxlength' => 255,
-            '#required' => FALSE,
+            '#required' => TRUE,
         );
         $form['redmine_ticket_email'] = array(
             '#type' => 'textfield',
             '#title' => t('E-Mail:'),
             '#size' => 83,
             '#maxlength' => 255,
-            '#required' => FALSE,
+            '#required' => TRUE,
         );
         if(variable_get('redmine_api_customfields_tip_check','0') == '1')
         {
