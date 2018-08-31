@@ -30,7 +30,7 @@ function redminesupport_form($form, &$form_state,$givenprojectid = null)
     $response = curl_exec($ch);
     //dsm($response);
    
-    //$response = drupal_http_request('http://redmine.gdi-de.org/projects.xml',$options);
+    //$response = drupal_http_request('http://www.example.com/projects.xml',$options);
     //dsm($response);
     //$xml = new SimpleXMLElement($response->data);
     $xml = new SimpleXMLElement($response);
@@ -86,7 +86,7 @@ function redminesupport_form($form, &$form_state,$givenprojectid = null)
     );
     $form['redmine_ticket_body'] = array(
         '#type' => 'textarea',
-        '#title' => t('Bitte geben Sie hier Ihre Meldung ein'),
+        '#title' => t('Bitte geben Sie hier Ihre Meldung ein:'),
         '#size' => 100,
         '#maxlength' => 10000,
         '#required' => TRUE,
@@ -117,18 +117,28 @@ function redminesupport_form($form, &$form_state,$givenprojectid = null)
     }
     if(variable_get('redmine_api_file_check') == '1')
     {
-        $form['redmine_ticket_files'] = array
+        // $form['redmine_ticket_files'] = array
+        $form['files']['anhang_upload'] = array
         (
-            '#title' => t('Anhang'),
+            '#description' => t('Eine optional angehängte Datei darf maximal 50 MB groß sein. ClamAV wird diese Datei auf Malware prüfen. Falls Sie mehrere Dateien anhängen möchten, packen Sie diese bitte vorher in eine unverschlüsselte ZIP-Datei und laden Sie diese hoch.'),
+            '#multiple' => FALSE,
             '#name' => 'file',
-            '#type' => 'file',
-            "#upload_validators"  => array("file_validate_extensions" => array("png gif jpg")),
+            '#process' => array('process_anhang'),
+            '#progress_indicator' => 'throbber',  // 'none', 'bar' (better needs Ubuntu 18.04 and PHP 7.2), 'throbber' (default)
+            '#progress_message' => NULL,
+            '#title' => t('Anhang:'),
+            '#type' => 'managed_file',
+            "#upload_validators"  => array(
+                "file_validate_extensions" => array("ai bmp csv dia doc docx gif jpeg jpg json log pcap pdf png ppt pptx py txt war xls xlsx xml xps xsd yaml yml zip"),
+                'file_validate_size' => array(50*1024*1024),
+            ),
         );
     }
     $form['submit'] = array('#type' => 'submit', '#value' => t('Ticket erstellen'));
     curl_close($ch);
     return $form;
 }
+
 
 function redminesupport_form_validate($form, &$form_state)
 {
@@ -154,6 +164,18 @@ function redminesupport_form_validate($form, &$form_state)
 //    } 
 }
 
+
+function process_anhang($element, &$form_state, $form)
+{
+    $element = file_managed_file_process($element, $form_state, $form);
+    // dsm($element['upload_button']);
+    $element['upload_button']['#access'] = FALSE;
+    // $element['upload_button']['#value'] = t('Uploade Datei');
+    // $element['remove_button']['#value'] = t('Entferne Datei');
+    return $element;
+}
+
+
 function redminesupport_form_submit($form, &$form_state) 
 {
     $json = [];
@@ -172,23 +194,33 @@ function redminesupport_form_submit($form, &$form_state)
         $json['issue']['custom_fields'][]= array('value' => $form_state['values']['redmine_ticket_email'], 'id' => '1');
     } 
     //Upload-File
-    if(!empty($_FILES['file']['name']))
+    $file = file_load($form_state['values']['anhang_upload']);
+    if($file)
     {
-        $url = variable_get('redmine_api_url').'uploads.json';
-        $data = file_get_contents($_FILES['file']['tmp_name']);
-        $options['method'] = 'POST';
-        $options['data'] = $data;
-        $options['max_redirects'] = 0;      
-        $options['headers']['Authorization'] = 'Basic ' . base64_encode(variable_get('redmine_api_user') .":". (variable_get('redmine_api_password')));
-        $options['headers']['Content-Type'] = 'application/octet-stream';
-        $response = drupal_http_request($url, $options);
-        if(variable_get('redmine_api_debug') == 1)
+        $file_uri = drupal_realpath($file->uri);
+        if (file_exists($file_uri) && fopen($file_uri, 'r') !== false)
         {
-            dsm($response);           
+            $data = file_get_contents($file_uri);
+            
+            $url = variable_get('redmine_api_url').'uploads.json';
+            //$data = file_get_contents($_FILES['file']['tmp_name']);
+            $options['method'] = 'POST';
+            $options['data'] = $data;
+            $options['max_redirects'] = 0;      
+            $options['headers']['Authorization'] = 'Basic ' . base64_encode(variable_get('redmine_api_user') .":". (variable_get('redmine_api_password')));
+            $options['headers']['Content-Type'] = 'application/octet-stream';
+            $response = drupal_http_request($url, $options);
+            if(variable_get('redmine_api_debug') == 1)
+            {
+                dsm($response);           
+            }
+            $filetoken = json_decode($response->data)->upload->token;   
+            $json['issue']['uploads'] = array();
+            //$json['issue']['uploads'][] = array('token'=>$filetoken,'filename'=>$_FILES['file']['name'],'content_type'=>$_FILES['file']['type']);
+            $file_info = new finfo(FILEINFO_MIME_TYPE);
+            $mime_type = $file_info->buffer($data);
+            $json['issue']['uploads'][] = array('token'=>$filetoken,'filename'=>$file->filename,'content_type'=>$mime_type);
         }
-        $filetoken = json_decode($response->data)->upload->token;   
-        $json['issue']['uploads'] = array();
-        $json['issue']['uploads'][] = array('token'=>$filetoken,'filename'=>$_FILES['file']['name'],'content_type'=>$_FILES['file']['type']);
     } 
     
     $json['issue']['description'] = $form_state['values']['redmine_ticket_body'];
