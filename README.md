@@ -14,8 +14,9 @@ https://www.drupal.org/project/clamav
 
 For example, and in a nutshell:
 
+https://ftp.drupal.org/files/projects/clamav-7.x-1.0.tar.gz
+
 ```
-wget 'https://ftp.drupal.org/files/projects/clamav-7.x-1.0.tar.gz'
 sudo apt-get install clamav clamav-daemon
 ```
 
@@ -175,13 +176,9 @@ service clamav-daemon restart
 <summary>/etc/php5/apache2/php.ini</summary>
 <pre><code>
 max_execution_time = 1200
-
 max_input_time = 1200
-
 memory_limit = 511M
-
 post_max_size = 511M
-
 upload_max_filesize = 511M
 </code></pre>
 </details>
