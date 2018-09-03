@@ -190,6 +190,8 @@ upload_max_filesize = 511M
 systemctl restart apache2
 ```
 
+Check Drupal URL: admin/config/media/clamav
+
 ### Test upload
 
 #### Windows
@@ -199,3 +201,5 @@ As administrator:
 ```
 fsutil file createnew temp_51mb_file.zip 51000000
 ````
+
+Check Drupal URL: admin/reports/dblog
