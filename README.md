@@ -12,12 +12,13 @@ It is recommended to use a virus scanner, like ClamAV, if file uploads are allow
 
 https://www.drupal.org/project/clamav
 
-For example, and in a nutshell:
+#### For example, and in a nutshell
 
 Download, install and activate https://ftp.drupal.org/files/projects/clamav-7.x-1.0.tar.gz
 
 ```
-sudo apt-get install clamav clamav-daemon
+sudo apt update
+sudo apt install clamav clamav-daemon
 ```
 
 ---
