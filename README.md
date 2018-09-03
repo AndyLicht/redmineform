@@ -14,7 +14,7 @@ https://www.drupal.org/project/clamav
 
 For example, and in a nutshell:
 
-https://ftp.drupal.org/files/projects/clamav-7.x-1.0.tar.gz
+Download, install and activate https://ftp.drupal.org/files/projects/clamav-7.x-1.0.tar.gz
 
 ```
 sudo apt-get install clamav clamav-daemon
@@ -193,6 +193,8 @@ systemctl restart apache2
 
 #### Windows
 
+As administrator:
+
 ```
-C:\Windows\system32>fsutil file createnew temp_51mb_file.zip 51000000
+fsutil file createnew temp_51mb_file.zip 51000000
 ````
