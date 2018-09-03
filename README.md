@@ -89,7 +89,7 @@ ScanArchive true
 MaxDirectoryRecursion 15
 FollowDirectorySymlinks false
 FollowFileSymlinks false
-ReadTimeout 180
+<b>ReadTimeout 1200</b>
 MaxThreads 12
 MaxConnectionQueueLength 15
 LogSyslog false
@@ -148,11 +148,11 @@ MaxPartitions 50
 MaxIconsPE 100
 PCREMatchLimit 10000
 PCRERecMatchLimit 5000
-PCREMaxFileSize 25M
+<b>PCREMaxFileSize 511M</b>
 ScanXMLDOCS true
 ScanHWP3 true
 MaxRecHWP3 16
-StreamMaxLength 511M
+<b>StreamMaxLength 511M</b>
 LogFile /var/log/clamav/clamav.log
 LogTime true
 LogFileUnlock false
