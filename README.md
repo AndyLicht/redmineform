@@ -119,7 +119,7 @@ ExitOnOOM false
 LeaveTemporaryFiles false
 AlgorithmicDetection true
 ScanELF true
-IdleTimeout 30
+<b>IdleTimeout 1200</b>
 CrossFilesystems true
 PhishingSignatures true
 PhishingScanURLs true
@@ -130,8 +130,8 @@ DetectPUA false
 ScanPartialMessages false
 HeuristicScanPrecedence false
 StructuredDataDetection false
-CommandReadTimeout 5
-SendBufTimeout 200
+<b>CommandReadTimeout 1200</b>
+<b>SendBufTimeout 1200</b>
 MaxQueue 100
 ExtendedDetectionInfo true
 OLE2BlockMacros false
@@ -159,7 +159,7 @@ LogFileUnlock false
 LogFileMaxSize 0
 Bytecode true
 BytecodeSecurity TrustSigned
-BytecodeTimeout 60000
+<b>BytecodeTimeout 1200000</b>
 <b>TCPSocket 3310
 TCPAddr localhost</b>
 </code></pre>
