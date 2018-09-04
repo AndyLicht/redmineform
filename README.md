@@ -178,7 +178,7 @@ service clamav-daemon restart
 <pre><code>
 max_execution_time = 1200
 max_input_time = 1200
-memory_limit = 511M
+memory_limit = 2048M
 post_max_size = 511M
 upload_max_filesize = 511M
 </code></pre>
@@ -187,7 +187,7 @@ upload_max_filesize = 511M
 ---
 
 ```
-systemctl restart apache2
+service apache2 restart
 ```
 
 Check Drupal URL: admin/config/media/clamav
