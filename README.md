@@ -51,7 +51,7 @@ SafeBrowsing false
 Bytecode true
 NotifyClamd /etc/clamav/clamd.conf
 \# Check for new database 24 times a day
-Checks 24
+Checks 12
 DatabaseMirror db.local.clamav.net
 DatabaseMirror database.clamav.net
 <b># Proxy settings
@@ -90,20 +90,20 @@ MaxDirectoryRecursion 15
 FollowDirectorySymlinks false
 FollowFileSymlinks false
 <b>ReadTimeout 1200</b>
-MaxThreads 12
+<b>MaxThreads 24</b>
 MaxConnectionQueueLength 15
 LogSyslog false
 LogRotate true
 LogFacility LOG_LOCAL6
 LogClean false
-LogVerbose false
+<b>LogVerbose false</b>
 PreludeEnable no
 PreludeAnalyzerName ClamAV
 DatabaseDirectory /var/lib/clamav
 OfficialDatabaseOnly false
 SelfCheck 3600
 Foreground false
-Debug false
+<b>Debug false</b>
 ScanPE true
 MaxEmbeddedPE 10M
 ScanOLE2 true
