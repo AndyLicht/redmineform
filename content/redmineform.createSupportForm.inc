@@ -120,7 +120,7 @@ function redminesupport_form($form, &$form_state,$givenprojectid = null)
         // $form['redmine_ticket_files'] = array
         $form['files']['anhang_upload'] = array
         (
-            '#description' => t('Eine optional angehängte Datei darf maximal 50 MB groß sein. ClamAV wird diese Datei auf Malware prüfen. Falls Sie mehrere Dateien anhängen möchten, packen Sie diese bitte vorher in eine unverschlüsselte ZIP-Datei und laden Sie diese hoch.'),
+            '#description' => t('Eine optional angehängte Datei darf maximal 511 MB groß sein. ClamAV wird diese Datei auf Malware prüfen. Falls Sie mehrere Dateien anhängen möchten, packen Sie diese bitte vorher in eine unverschlüsselte ZIP-Datei und laden Sie diese hoch.'),
             '#multiple' => FALSE,
             '#name' => 'file',
             '#process' => array('process_anhang'),
@@ -129,8 +129,8 @@ function redminesupport_form($form, &$form_state,$givenprojectid = null)
             '#title' => t('Anhang:'),
             '#type' => 'managed_file',
             "#upload_validators"  => array(
-                "file_validate_extensions" => array("ai bmp csv dia doc docx gif jpeg jpg json log pcap pdf png ppt pptx py txt war xls xlsx xml xps xsd yaml yml zip"),
-                'file_validate_size' => array(50*1024*1024),
+                "file_validate_extensions" => array("ai bmp csv dia doc docx gif gz jpeg jpg json log pcap pdf png ppt pptx py tar txt war xls xlsx xml xps xsd yaml yml zip"),
+                'file_validate_size' => array(511*1024*1024),
             ),
         );
     }
@@ -209,11 +209,18 @@ function redminesupport_form_submit($form, &$form_state)
             $options['max_redirects'] = 0;      
             $options['headers']['Authorization'] = 'Basic ' . base64_encode(variable_get('redmine_api_user') .":". (variable_get('redmine_api_password')));
             $options['headers']['Content-Type'] = 'application/octet-stream';
+            $options['timeout'] = 1200.0;
             $response = drupal_http_request($url, $options);
             if(variable_get('redmine_api_debug') == 1)
             {
-                dsm($response);           
+                dsm($response);
             }
+            // function containsWord($str, $word)
+            // {
+            //     return !!preg_match('#\\b' . preg_quote($word, '#') . '\\b#i', $str);
+            // }
+            // dsm('1'.((String)containsWord((String)$response->data, 'upload')));
+            // dsm('2'.((String)containsWord((String)$response->data, 'token')));
             $filetoken = json_decode($response->data)->upload->token;   
             $json['issue']['uploads'] = array();
             //$json['issue']['uploads'][] = array('token'=>$filetoken,'filename'=>$_FILES['file']['name'],'content_type'=>$_FILES['file']['type']);
