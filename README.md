@@ -202,4 +202,10 @@ As administrator:
 fsutil file createnew temp_51mb_file.zip 51000000
 ````
 
+#### macOS
+
+```
+mkfile -n 51m temp_51mb_file.zip
+```
+
 Check Drupal URL: admin/reports/dblog
