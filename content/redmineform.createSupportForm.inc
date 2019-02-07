@@ -23,6 +23,7 @@ function redminesupport_form($form, &$form_state,$givenprojectid = null)
     
     $ch = curl_init();
     curl_setopt($ch, CURLOPT_URL, $url.'projects.xml');
+    curl_setopt($ch, CURLOPT_PROXY, variable_get('proxy_server').':'.variable_get('proxy_port'));
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
     curl_setopt($ch, CURLOPT_VERBOSE, 1);
     curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
@@ -234,6 +235,7 @@ function redminesupport_form_submit($form, &$form_state)
     $json['issue']['is_private'] = variable_get('redmine_api_publish');
     //Sending Ticket
     $ch = curl_init(variable_get('redmine_api_url').'issues.json');
+    curl_setopt($ch, CURLOPT_PROXY, variable_get('proxy_server').':'.variable_get('proxy_port'));
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
     curl_setopt($ch, CURLOPT_VERBOSE, 1);
     curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
